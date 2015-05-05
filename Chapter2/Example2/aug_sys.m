@@ -4,7 +4,7 @@ function dX = aug_sys(t,X,K,ifLearned,expl_noise_freq)
 x = X(1:6);
 
 if ~ifLearned;   % See if learning is stopped
-	u = 100*sum(sin(expl_noise_freq*t),2)/size(expl_noise_freq,2);
+	u = sum(sin(expl_noise_freq*t),2);
 else
 	u = -K*x;    % Exploitation
 end
