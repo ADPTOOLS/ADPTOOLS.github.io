@@ -3,7 +3,7 @@ xn = 6;
 un = 2;
 
 % Set the weighting matrices for the cost function
-Q = diag([10 0 0 0 0 100]);
+Q = diag([100 0 0 0 0 100]);
 R = diag([1 1]);
 
 % Initialize the feedback gain matrix
@@ -15,7 +15,7 @@ T  = 0.01;          %Length of each integration interval
 
 x0 = [20;5;10;2;-1;-2]; %Initial condition
 
-expl_noise_freq = (rand(un,100)-.5)*1000; % Exploration noise frequencies
+expl_noise_freq = (rand(un,100)-.5)*100; % Exploration noise frequencies
 
 % Matrices to collect online data and perform learning
 Dxx=[];
@@ -72,8 +72,8 @@ B = [-0.0042  0.0064
       0      -0.0168;
       0       0];
 
-[K0,P0] = lqr(A,B,Q,R); % Calculate the ideal solution for comparion purpose
-k_save  = norm(K-K0);  % keep track of the differences between the actual K
+[Kopt,Popt] = lqr(A,B,Q,R); % Calculate the ideal solution for comparion purpose
+k_save  = norm(K-Kopt);  % keep track of the differences between the actual K
 % and the idea valu
 
 %% Off-policy learning using the collected online data
@@ -91,8 +91,8 @@ while norm(P-P_old)>1e-8 & it<MaxIteration
     
     BPv = pp(end-(xn*un-1):end);
     K = inv(R)*reshape(BPv,un,xn)/2;% Get the improved gain matrix
-    p_save = [p_save,norm(P-P0)];   % Keep track of the cost matrix
-    k_save = [k_save,norm(K-K0)];    % Keep track of the control gains
+    p_save = [p_save,norm(P-Popt)];   % Keep track of the cost matrix
+    k_save = [k_save,norm(K-Kopt)];    % Keep track of the control gains
     
     disp(['K_', num2str(it), '=']);
     disp(K);
@@ -139,24 +139,26 @@ plot(t_final, x_final(:,6),'k-', ...
      ttt, xxx(:,6),'r--', ...
     'Linewidth',2)
 ylim([-120 40])
+
+legend('MAF (Under ADP)', 'MAF (Unlearned)')
+xlabel('Time (sec)','FontSize',12)
+
+% Create textarrow
+annotation(figure(3),'textarrow',[0.2630173564753 0.218958611481976],...
+	[0.166023166023166 0.198841698841699],'String',{'Controller Updated'},...
+	'FontSize',14);
+
 % Uncomment to save figure
 % print('Ch2_ex2_fig2_y','-depsc')
 
-legend('MAF (Under ADP)', 'MAF (Unlearned')
-xlabel('Time (sec)')
-
-% Create textarrow
-annotation(figure(3),'textarrow',[0.292788197181792 0.234338005517957],...
-    [0.196583821583822 0.159190659190657],...    
-    'String',{'Controller Updated'});
 
 %% Display results
 disp('Approximate Cost Matrix')
 P
 disp('Optimal Cost Matrix')
-P0
+Popt
 disp('Approximate Gain Matrix')
 K
 disp('Optimal Gain Matrix')
-K0
+Kopt
 
