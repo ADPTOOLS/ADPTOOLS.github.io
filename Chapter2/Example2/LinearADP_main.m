@@ -135,10 +135,10 @@ legend('x_1','x_2','x_3','x_4','x_5','x_6')
 xlabel('Time (sec)')
 
 figure(3)
-plot(t_final, x_final(:,6),'k-', ...
-     ttt, xxx(:,6),'r--', ...
+plot(t_final, 3.6*x_final(:,6),'k-', ...
+     ttt, 3.6*xxx(:,6),'r--', ...
     'Linewidth',2)
-ylim([-120 40])
+ylim([-400 150])
 
 legend('MAF (Under ADP)', 'MAF (Unlearned)')
 xlabel('Time (sec)','FontSize',12)
